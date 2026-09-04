@@ -23,15 +23,18 @@ use {
 fn setup() -> (LiteSVM, Keypair) {
     let program_id = escrowq32026::id();
     let payer = Keypair::new();
+
     let mut svm = LiteSVM::new();
+
     let bytes = include_bytes!(concat!(
-        env!("CARGO_TARGET_TMPDIR"),
-        "/../deploy/escrowq32026.so"
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../target/deploy/escrowq32026.so"
     ));
+
     svm.add_program(program_id, bytes).unwrap();
+
     svm.airdrop(&payer.pubkey(), 1_000_000_000).unwrap();
 
-    // Return the LiteSVM instance and payer keypair
     (svm, payer)
 }
 
