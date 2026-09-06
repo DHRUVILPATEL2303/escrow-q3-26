@@ -22,7 +22,8 @@ pub struct Take<'info> {
     pub mint_b: InterfaceAccount<'info, Mint>,
 
     #[account(
-        mut,
+        init_if_needed,
+        payer=taker,
         associated_token::mint = mint_a,
         associated_token::authority = taker,
         associated_token::token_program = token_program,
@@ -38,7 +39,8 @@ pub struct Take<'info> {
     pub taker_ata_b: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        mut,
+        init_if_needed,
+        payer=taker,
         associated_token::mint = mint_b,
         associated_token::authority = maker,
         associated_token::token_program = token_program,
