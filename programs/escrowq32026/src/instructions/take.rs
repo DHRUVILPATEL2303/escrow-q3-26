@@ -7,7 +7,7 @@ use anchor_spl::{
     },
 };
 
-use crate::{ESCROW_SEED, Escrow, error::EscrowError};
+use crate::{error::EscrowError, Escrow, ESCROW_SEED};
 
 #[derive(Accounts)]
 pub struct Take<'info> {
@@ -78,10 +78,13 @@ pub struct Take<'info> {
 impl<'info> Take<'info> {
     pub fn take_swap(&mut self) -> Result<()> {
         let current_time = Clock::get()?.unix_timestamp;
-        require!(current_time < self.escrow.expiration, EscrowError::EscrowExpired);
+        require!(
+            current_time < self.escrow.expiration,
+            EscrowError::EscrowExpired
+        );
 
         let token_program = self.token_program.key();
-        
+
         {
             let cpi_accounts = TransferChecked {
                 from: self.taker_ata_b.to_account_info(),
@@ -108,7 +111,8 @@ impl<'info> Take<'info> {
                 mint: self.mint_a.to_account_info(),
                 authority: self.escrow.to_account_info(),
             };
-            let cpi_context = CpiContext::new_with_signer(token_program, transfer_cpi_accounts, &signer_seeds);
+            let cpi_context =
+                CpiContext::new_with_signer(token_program, transfer_cpi_accounts, &signer_seeds);
             transfer_checked(cpi_context, self.vault.amount, self.mint_a.decimals)?;
         }
 
@@ -118,7 +122,8 @@ impl<'info> Take<'info> {
                 destination: self.taker.to_account_info(),
                 authority: self.escrow.to_account_info(),
             };
-            let cpi_context = CpiContext::new_with_signer(token_program, close_cpi_accounts, &signer_seeds);
+            let cpi_context =
+                CpiContext::new_with_signer(token_program, close_cpi_accounts, &signer_seeds);
             close_account(cpi_context)?;
         }
 
