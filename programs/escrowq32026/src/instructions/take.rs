@@ -7,7 +7,7 @@ use anchor_spl::{
     },
 };
 
-use crate::{Escrow, ESCROW_SEED};
+use crate::{ESCROW_SEED, Escrow, error::EscrowError};
 
 #[derive(Accounts)]
 pub struct Take<'info> {
@@ -77,6 +77,11 @@ pub struct Take<'info> {
 
 impl<'info> Take<'info> {
     pub fn take_swap(&mut self) -> Result<()> {
+
+        let current_time = Clock::get()?.unix_timestamp;
+
+        require!(current_time < self.escrow.expiration ,EscrowError::EscrowExpired );
+        
         let token_program = &self.token_program.key();
 
         let cpi_accounts = TransferChecked {

@@ -48,9 +48,8 @@ pub mod escrowq32026 {
         ctx.accounts.refund_and_close_vault()
     }
 
-    pub fn update(ctx : Context<Update> , new_receive: u64, new_expiration: i64) -> Result<()> {
+    #[instruction(discriminator = 3)]
+    pub fn update(ctx: Context<Update>, new_receive: u64, new_expiration: i64) -> Result<()> {
         ctx.accounts.update_escrow(new_receive, new_expiration)
     }
-
-
 }
